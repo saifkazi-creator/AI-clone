@@ -1,89 +1,61 @@
-# Make-AI-Clone-of-Yourself
+Make an AI Clone of Yourself
+This project provides a comprehensive guide to creating a personalized AI chatbot using your own WhatsApp chat data. By fine-tuning a large language model (LLM) like Llama 3 on your conversation history, you can build a model that communicates in your unique style, including a mix of languages like Hinglish (Hindi + English).
 
-### Full Video Tutorial on [Youtube](https://youtu.be/a2_ZvzE55cA) - <https://youtu.be/a2_ZvzE55cA>
+The project addresses privacy concerns by ensuring that your data is not sent to third-party APIs. The entire fine-tuning process is performed for free using a Google Colab instance, and the final model can be run locally on your computer with Ollama.
 
-## Motivation
+Motivation
+Have you ever wondered if you could have an AI that talks just like you? This project was inspired by an AI enthusiast who used Retrieval Augmented Generation (RAG) and the GPT-3.5 Turbo API to create a personal AI clone. However, this method has a major drawback: sending personal chats to OpenAI for processing can pose significant privacy risks.
 
-I saw a reel on Instagram in which an AI enthusiast created an AI clone of himself to talk to his girlfriend (Certainly, I won't do that... xd) using [RAG](https://youtu.be/YVWxbHJakgg?feature=shared) Retrieval Augmented Generation and the Chat GPT-3.5 turbo API. It kind of worked, but it had major privacy issues. Sending personal chats to Chat GPT could potentially result in those chats being used by OpenAI to train its model. This led me to think, what if I fine-tuned a pre-existing model like Llama or Mixtral on my personal WhatsApp chat history? It would be cool to have a model that can talk like me as I do on WhatsApp, primarily in Hinglish (Hindi + English).
+This guide provides an alternative approach. Instead of using a third-party API, we'll fine-tune a pre-existing model, ensuring your data remains completely private and secure. Fine-tuning a large model, such as one with 7 billion parameters, typically requires powerful hardware with a minimum of 32 GB of GPU RAM, which is costly and not available in free-tier GPU compute services. However, this project demonstrates how to work around these limitations using techniques like 4-bit quantization and free-tier GPU services like Google Colab.
 
-[Fine-tuning a large language model (LLM)](https://youtu.be/YVWxbHJakgg?feature=shared) requires a good understanding of LLMs in general. The major challenge with fine-tuning big models, such as a 7B parameter model, is that it requires a minimum of 32GB of GPU RAM, which is costly and not available in free-tier GPU compute services like Colab or Kaggle. So, I had to find a way around this limitation.
+Getting Started
+1. Data Collection and Preparation
+The first step is to collect your WhatsApp chat history and prepare it for fine-tuning.
 
-Another important aspect is that the fine-tuning results heavily depend on the quality and size of the dataset used. Converting raw WhatsApp chat data into a usable dataset is challenging but worth pursuing.
+Export Your Chats: Open WhatsApp, go to the chat you want to export, and select More > Export Chat and choose "Without media". Repeat this process for all individual chats you want to use. The more data you have, the better the model will perform.
 
-Let's see how it looks in reality and how it's being carried out.
+Filter Your Data: The exported chat files contain irrelevant information like timestamps, omitted media messages, and deleted messages. This project uses regex to automatically remove these elements and convert the chat history into a Prompt: Response format. You can also filter out specific "filler words" (e.g., "Ok," "Yup," "Hmm") to prevent the model from learning to respond with these words exclusively.
 
-## Google Colab Notebook
+2. Fine-Tuning the Model
+The fine-tuning process is done using a Google Colab notebook, making it accessible and free. We'll use the Unsloth library, which is highly optimized for fine-tuning and requires less VRAM.
 
-Here is link of [Google Colab Notebook](https://colab.research.google.com/drive/1OGkiAZsYfShY0o8ZphCUuXkmb2Om422X?usp=sharing)
+Open the Colab Notebook: The notebook contains all the code needed for data preparation and model training.
 
-* This Notebook Contains - 
-    * Data Collection From Whatsapp
-    * Data Prepration
-    * Data Filtering
-    * Model Training
-    * Inference
-    * Saving Finetuned Model
-    * GGUF Conversion
-    * Downloading Saved Model
+Upload Your Chat Files: Upload the exported chat .zip files to the Colab runtime environment.
 
+Run the Notebook: The notebook will guide you through the process of data preparation, filtering, and model training. It uses Llama-3 8B Instruct as the base model, fine-tuning it with a technique called 4-bit Quantization to reduce memory usage. The notebook will train the model and save the fine-tuned version in a GGUF format, which is compatible with local LLM runners like Ollama.
 
-## Chatting With Fine-Tuned Model Using Ollama (You can also use [LM Studio](https://lmstudio.ai/) & [GPT4ALL](https://www.nomic.ai/gpt4all))
+3. Running the Model Locally with Ollama
+Once the fine-tuning is complete, you can download the model and run it on your personal computer.
 
-### Downloading Ollama
-Go to the [downloads page of Ollama](https://ollama.com/download) and download and install it according to your OS.
+Install Ollama: Download and install Ollama from the official website.
 
-### Loading the Model into Ollama
-1. Open your file manager.
-2. Navigate to the directory where you have downloaded the fine-tuned model, generally the Downloads folder.
-3. Right-click anywhere on the screen and choose "Open terminal here." If you are using Windows, you can directly type `cmd` into the address bar and hit enter.
-4. Type `ollama --version` into the terminal to check if you have installed Ollama successfully.
-5. Make sure the model `unsloth.Q8_0.gguf` and `Modelfile` are in the current directory.
-6. Open `Modelfile` using any text editor.
-7. Edit the first line to ensure it looks like `FROM ./unsloth.Q8_0.gguf`, and save it.
-8. Type this command: `ollama create my_model -f Modelfile`. This will add the model into Ollama.
-9. Now type `ollama run my_model`.
-10. You can now chat with your model.
+Download the Model: Download the unsloth.Q8_0.gguf file and the Modelfile from your Google Colab session. You can do this directly from the Colab file browser or by copying the files to your Google Drive for easier downloading.
 
-## Using Model to Automate WhatsApp
-Here comes the final part. I am using this wonderful tool [WPP_Whatsapp](https://github.com/3mora2/WPP_Whatsapp) to automate WhatsApp. By using this, we can use our model to respond to any incoming messages on WhatsApp. We can define specific people to talk to. Here is the step-by-step guide:
+Load the Model into Ollama: Open a terminal in the same directory where you downloaded the model files. Edit the Modelfile to ensure the first line is FROM ./unsloth.Q8_0.gguf, then save it. Run the command: ollama create my_model -f Modelfile. Your personalized model is now loaded into Ollama and can be run with ollama run my_model.
 
-1. Clone this repo using:
-    `git clone https://github.com/Eviltr0N/Make-AI-Clone-of-Yourself.git`
+Automating WhatsApp with the AI Model
+This project includes a Python script that uses the WPP_Whatsapp library to connect your fine-tuned model to WhatsApp, allowing it to respond to incoming messages automatically.
 
-2. Go to the cloned repo:
-    `cd Make-AI-Clone-of-Yourself/`
+Clone the Repository:
+git clone https://github.com/Eviltr0N/Make-AI-Clone-of-Yourself.git
 
-3. Install all the required packages by:
-    `pip install -r requirements.txt`
+Install Dependencies:
+pip install -r requirements.txt
 
-4. First run:
-    `python3 chat.py`
+Run the ai_to_whatsapp.py script:
+python3 ai_to_whatsapp.py
 
-   Then type something like "Hello" and hit enter. If it works, it means everything is set up correctly.
+Connect Your WhatsApp: A browser window will open, prompting you to scan a QR code with your WhatsApp app to link your account. Once connected, the script will ask for the phone number of the person you want the AI to respond to (including the country code, without the + symbol).
 
-5. Exit by pressing `Ctrl+C`.
-6. Now run:
-    `python3 ai_to_whatsapp.py`
+Customization
+You can adjust the behavior of your AI by editing the ai_to_whatsapp.py file.
 
-7. It will take a bit of time at first to download the Chromium browser. As it finishes, a browser window will appear, and you have to scan the QR code using WhatsApp to link your WhatsApp account.
-8. Switch back to the terminal. You have to provide the phone number of the other person you want to respond to with this AI model.
-9. The phone number must include the country code without the `+` symbol, such as `916969696969`, then press enter.
-10. As soon as that person sends any message, it will be printed on the terminal, and the AI model will respond to it.
+Temperature: Controls the creativity and unpredictability of the model's responses. A higher value (e.g., 0.9) makes responses more creative, while a lower value (e.g., 0.3) makes them more focused and predictable.
 
-### Keep in Mind
-* If you want to change the temperature and top_k of the model (in simpler terms, temperature means creativity of the model), then:
-    1. Open the `ai_to_whatsapp.py` file using any text editor.
-    2. Go to the 9th line where you will find:
-       `my_llm = LLM("my_model", 0.3, 50, 128)`
+Top_k: Determines the number of top candidate tokens to consider for the next word. A higher value (e.g., 95) allows for more diverse responses.
 
-    3. Change `0.3` to a higher value such as `0.9` to increase the temperature (creativity) of the model.
-    4. You can also change top_k from `50` to a higher value like `95`.
+What's Next
+Multimodal Capabilities: Add support for the model to understand and respond to images, not just text.
 
-* Temperature can vary from `0.1` to `1` and top_k from `1` to `100`. The higher the temperature, the more creative and unpredictable the model becomes.
-* Keep playing with the values of `temperature` and `top_k` until you are satisfied with the model's responses.
-
-
-## What's Next
-* Adding multimodal capabilities so this can understand and react to images too, as it currently supports only text messages.
-
-* Adding some sort of agent pipeline above this model so another model, such as `LLaMA 3.1`, can see the message and the response of this model and judge if it is suitable or not, and can modify the model response accordingly.
+Agent Pipeline: Implement an agent-based system where a secondary model (e.g., Llama 3.1) can review and refine the responses of the fine-tuned model to ensure they are suitable and accurate.
