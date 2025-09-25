@@ -1,4 +1,5 @@
 Make an AI Clone of Yourself
+
 This project provides a comprehensive guide to creating a personalized AI chatbot using your own WhatsApp chat data. By fine-tuning a large language model (LLM) like Llama 3 on your conversation history, you can build a model that communicates in your unique style, including a mix of languages like Hinglish (Hindi + English).
 
 The project addresses privacy concerns by ensuring that your data is not sent to third-party APIs. The entire fine-tuning process is performed for free using a Google Colab instance, and the final model can be run locally on your computer with Ollama.
